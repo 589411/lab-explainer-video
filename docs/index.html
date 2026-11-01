@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>一句話做解說影片｜藍鴨 Launchdock Lab</title>
+<meta name="description" content="複製一段提示詞貼給 AI agent，它自己寫程式、輸出一支 15 秒的中文解說影片。">
+<meta property="og:image" content="https://explainer.launchdock.app/poster.png">
+<style>
+  :root { --bg:#0B1E3F; --card:#13284f; --y:#FFC93C; --fg:#f4f6fb; --mute:#a9b4cc; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif; line-height:1.7; }
+  main { max-width:920px; margin:0 auto; padding:32px 20px 64px; }
+  a { color:var(--y); }
+  h1 { font-size:2rem; margin:.2em 0; }
+  h2 { font-size:1.3rem; margin:2em 0 .5em; }
+  .lead { color:var(--mute); }
+  video { width:100%; border-radius:14px; display:block; background:#000; }
+  .step { display:inline-block; background:var(--y); color:var(--bg); font-weight:700; border-radius:999px; padding:0 .7em; margin-right:.4em; }
+  .box { position:relative; background:var(--card); border-radius:12px; padding:16px; }
+  pre { margin:0; white-space:pre-wrap; word-break:break-word; font-size:.88rem; max-height:420px; overflow:auto;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+  button { position:sticky; float:right; top:0; background:var(--y); color:var(--bg); border:0; border-radius:8px;
+    padding:6px 14px; font-weight:700; cursor:pointer; font-size:.95rem; }
+  ol li { margin:.3em 0; }
+  code { background:rgba(255,255,255,.1); padding:0 .3em; border-radius:4px; }
+  .note { font-size:.9rem; color:var(--mute); }
+</style>
+</head>
+<body><main>
+<p class="note"><a href="https://lab.launchdock.app">← 藍鴨 AI 實例庫</a></p>
+<h1>🎞️ 一句話做解說影片</h1>
+<p class="lead">複製一段提示詞貼給 AI agent，它自己寫程式、輸出一支 15 秒的中文解說影片。下面這支就是照這段提示詞做出來的。</p>
+
+<h2><span class="step">1</span>先看成品</h2>
+<video src="explainer.mp4" poster="poster.webp" controls muted playsinline loop preload="metadata"></video>
+
+<h2><span class="step">2</span>複製這段提示詞</h2>
+<p>貼進 Claude Code、Codex 或 Antigravity（agy），它會自己建專案、裝 Remotion 官方技能、寫程式、輸出 <code>out/explainer.mp4</code>。電腦要先裝好 Node.js 20 以上。第一次執行會下載瀏覽器核心，大約要幾分鐘。</p>
+<div class="box"><button data-copy="prompt">複製</button><pre id="prompt">請幫我用 Remotion 做一支 15 秒的中文解說影片，主題是「什麼是 AI agent」。請一步一步照做，不要問我問題，做完再回報。
+
+【1. 建專案】
+在目前資料夾執行：
+npx create-video@latest --yes --blank --no-tailwind my-explainer
+cd my-explainer
+npm install
+
+【2. 裝 Remotion 官方技能】
+在 my-explainer 裡執行：
+npx skills add remotion-dev/skills --yes
+裝好後先讀 remotion-best-practices 這個技能，照它的規則寫程式。
+
+【3. 字型】
+只用 Noto Sans TC（Google 開源字型，OFL 授權，可商用）：
+npx remotion add @remotion/google-fonts
+在程式裡從 &quot;@remotion/google-fonts/NotoSansTC&quot; 載入，只載 400 和 900 兩種粗細。
+
+【4. 影片規格】
+- 1920×1080、30fps、共 450 格（15 秒），composition id 叫 Explainer。
+- 深藍底（#0B1E3F），文字白色，重點色用鴨黃（#FFC93C）。
+- 動畫只能用 useCurrentFrame() 搭配 interpolate() 或 spring()，不要用 CSS 動畫或 transition。
+- 分成四個場景（用 &lt;Sequence&gt; 排時間）：
+  第 1 段（0–3 秒）：大標「什麼是 AI agent？」彈出，下方小字「15 秒看懂」淡入。
+  第 2 段（3–7 秒）：左右兩張卡依序滑入。左卡「聊天機器人」＋「你問，它答」；右卡「AI agent」＋「你交代，它去做」，右卡用鴨黃邊框。
+  第 3 段（7–12 秒）：三個圓圈從左到右依序亮起，中間有箭頭：「看：讀資料」→「想：排步驟」→「做：用工具」。最後一個亮起後，底下出現一行「做完再看結果，不對就再來一輪」。
+  第 4 段（12–15 秒）：結尾大字「你給目標，它跑流程」，下方小字「藍鴨 Launchdock Lab」，最後半秒整個畫面淡出。
+- 每段進場都要有動畫，字不能超出畫面。
+
+【5. 輸出】
+先執行 npx tsc --noEmit 確認沒有錯誤，再輸出影片：
+npx remotion render Explainer out/explainer.mp4 --crf 28
+再輸出一張封面圖：
+npx remotion still Explainer out/poster.png --frame 340
+如果輸出時瀏覽器打不開（例如 Codex 的沙盒擋住 Chrome），請停下來請我允許在沙盒外執行這兩行，不要改用其他方法做影片。
+
+【6. 回報】
+告訴我 out/explainer.mp4 和 out/poster.png 的位置與檔案大小。
+</pre></div>
+<p class="note">想換主題：只要改「主題」和第 4 段裡的四段文字，其他照貼。每個 AI 做出來的畫面細節會有點不同，但結構、時間和配色會一樣。</p>
+<p class="note">用 Codex 的話：它的沙盒會擋住 Remotion 要開的瀏覽器，輸出影片那一步請允許它在沙盒外執行（或自己在終端機貼那兩行）。</p>
+
+<h2><span class="step">3</span>進階：存成技能，下次一句話就好</h2>
+<ol>
+  <li>建一個資料夾 <code>explainer-video</code>，把下面這份存成裡面的 <code>SKILL.md</code>（或直接<a href="SKILL.md" download>下載</a>）。</li>
+  <li>放進技能資料夾：Claude Code 放 <code>~/.claude/skills/</code>；Codex 放 <code>~/.agents/skills/</code>；Antigravity 放 <code>~/.gemini/antigravity/skills/</code>。</li>
+  <li>之後只要說：「做一支解說影片，主題是〇〇」。</li>
+</ol>
+<div class="box"><button data-copy="skill">複製</button><pre id="skill">---
+name: explainer-video
+description: 用 Remotion 把一段主題或文字做成 15 秒、1920×1080 的中文解說影片（MP4）和一張封面圖。使用者說「做一支解說影片」「把這段做成影片」「做 15 秒片頭」時使用。
+---
+
+# 一句話做解說影片
+
+把使用者給的主題（或一段文字）做成 15 秒的中文解說影片。
+
+## 先問清楚（缺的才問，最多一題）
+- 主題或要講的內容。只給主題就自己寫成 3–4 句重點。
+- 沒說的就用預設：1920×1080、30fps、15 秒、深藍底 #0B1E3F、白字、重點色 #FFC93C。
+
+## 步驟
+1. 還沒有 Remotion 專案就建一個（已有就跳過）：
+   ```bash
+   npx create-video@latest --yes --blank --no-tailwind explainer
+   cd explainer &amp;&amp; npm install
+   npx skills add remotion-dev/skills --yes
+   npx remotion add @remotion/google-fonts
+   ```
+2. 讀 remotion-best-practices 技能，照它的規則寫程式。
+3. 把內容拆成 4 個場景，每段 3–5 秒，加起來 450 格：
+   - 開場：大標題彈出，一行副標淡入。
+   - 重點一：對比或定義（例如兩張卡片左右滑入）。
+   - 重點二：流程或步驟（例如圓圈依序亮起，中間有箭頭）。
+   - 結尾：一句收尾的話，最後半秒淡出。
+4. 寫法規定：
+   - 字型只用 `@remotion/google-fonts/NotoSansTC`（OFL 授權），只載用到的粗細。
+   - 動畫只能用 `useCurrentFrame()` 配 `interpolate()` / `spring()`，不要用 CSS 動畫。
+   - 用 `&lt;Sequence&gt;` 排時間，composition id 叫 `Explainer`。
+   - 每行字不超過 16 個中文字，字級至少 52px，不能超出畫面。
+5. 檢查並輸出：
+   ```bash
+   npx tsc --noEmit
+   npx remotion render Explainer out/explainer.mp4 --crf 28
+   npx remotion still Explainer out/poster.png --frame 340
+   ```
+6. 自己看一下封面圖，確認字沒有被切掉、沒有缺字（出現方框代表字型沒載到）。
+
+## 回報
+告訴使用者 `out/explainer.mp4`、`out/poster.png` 的路徑和大小，並說明可以用 `npx remotion studio` 打開預覽、直接改字。
+
+## 授權提醒
+Remotion 對個人、3 人以下的公司、非營利組織免費（可商用）；超過 3 人的營利公司要買 Company License（https://www.remotion.pro/license）。
+</pre></div>
+
+<h2>授權說明</h2>
+<ul class="note">
+  <li><a href="https://www.remotion.dev/docs/license">Remotion</a>：個人、3 人以下的公司、非營利組織可免費使用，商用也可以；超過 3 人的營利公司要買 Company License。</li>
+  <li>影片字型 Noto Sans TC：SIL Open Font License 1.1，可免費商用。</li>
+  <li>這頁的原始碼：<a href="https://github.com/589411/lab-explainer-video">589411/lab-explainer-video</a></li>
+  <li><a href="https://github.com/remotion-dev/skills">Remotion 官方 agent 技能</a>：用 <code>npx skills add remotion-dev/skills</code> 安裝。</li>
+</ul>
+</main>
+<script>
+document.querySelectorAll('button[data-copy]').forEach(b => b.addEventListener('click', async () => {
+  const t = document.getElementById(b.dataset.copy).textContent;
+  try { await navigator.clipboard.writeText(t); b.textContent = '已複製 ✓'; }
+  catch (e) { b.textContent = '請手動選取'; }
+  setTimeout(() => b.textContent = '複製', 1800);
+}));
+</script>
+</body></html>
