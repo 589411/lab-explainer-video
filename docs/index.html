@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>一句話做解說影片｜藍鴨 Launchdock Lab</title>
-<meta name="description" content="複製一段提示詞貼給 AI agent，它自己寫程式、輸出一支 15 秒的中文解說影片。">
+<meta name="description" content="你不用會寫程式：複製一段文字貼給 AI 助手，它就幫你做出 15 秒的解說影片。">
 <meta property="og:image" content="https://explainer.launchdock.app/poster.png">
 <style>
   :root { --bg:#0B1E3F; --card:#13284f; --y:#FFC93C; --fg:#f4f6fb; --mute:#a9b4cc; }
@@ -23,7 +23,7 @@
     font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
   button { position:sticky; float:right; top:0; background:var(--y); color:var(--bg); border:0; border-radius:8px;
     padding:6px 14px; font-weight:700; cursor:pointer; font-size:.95rem; }
-  ol li { margin:.3em 0; }
+  ol li { margin:.6em 0; } ul { margin:.3em 0; }
   code { background:rgba(255,255,255,.1); padding:0 .3em; border-radius:4px; }
   .note { font-size:.9rem; color:var(--mute); }
 </style>
@@ -31,13 +31,29 @@
 <body><main>
 <p class="note"><a href="https://lab.launchdock.app">← 藍鴨 AI 實例庫</a></p>
 <h1>🎞️ 一句話做解說影片</h1>
-<p class="lead">複製一段提示詞貼給 AI agent，它自己寫程式、輸出一支 15 秒的中文解說影片。下面這支就是照這段提示詞做出來的。</p>
+<p class="lead"><strong>你不用會寫程式。</strong>複製一段文字，貼給 AI 助手，它就會幫你做出下面這支 15 秒的影片。</p>
 
 <h2><span class="step">1</span>先看成品</h2>
 <video src="explainer.mp4" poster="poster.webp" controls muted playsinline loop preload="metadata"></video>
+<p class="note">這支影片就是照下面那段文字做出來的。每次做出來的畫面細節會有點不一樣，但段落、時間和顏色會一樣。</p>
 
-<h2><span class="step">2</span>複製這段提示詞</h2>
-<p>貼進 Claude Code、Codex 或 Antigravity（agy），它會自己建專案、裝 Remotion 官方技能、寫程式、輸出 <code>out/explainer.mp4</code>。電腦要先裝好 Node.js 20 以上。第一次執行會下載瀏覽器核心，大約要幾分鐘。</p>
+<h2><span class="step">2</span>照著做（第一次用也沒問題）</h2>
+<ol>
+  <li><strong>先準備。</strong>你需要一台 Mac 或 Windows 電腦。先到 <a href="https://nodejs.org">nodejs.org</a> 下載 Node.js（讓電腦能跑影片程式的免費工具），選 LTS 版，一路按「下一步」裝好。</li>
+  <li><strong>打開 AI 助手。</strong>下面三個選一個就好，它們都是「會自己動手操作電腦的 AI」，英文叫 AI agent（AI 代理人）：
+    <ul>
+      <li>Claude Code（Anthropic 公司出的）</li>
+      <li>Codex（OpenAI 公司出的）</li>
+      <li>Antigravity（Google 出的，指令叫 <code>agy</code>）</li>
+    </ul>
+    打開「終端機」（Mac 在「應用程式 → 工具程式」裡；Windows 叫 PowerShell）。先輸入 <code>mkdir my-video</code> 按 Enter，再輸入 <code>cd my-video</code> 按 Enter，這樣就開好一個空資料夾。接著輸入 <code>claude</code>、<code>codex</code> 或 <code>agy</code>，按 Enter。</li>
+  <li><strong>貼上文字。</strong>按下面的「複製」按鈕，回到 AI 助手的視窗，貼上（Mac 按 ⌘V，Windows 按 Ctrl+V），再按 Enter。</li>
+  <li><strong>等它做。</strong>畫面會一直跑字，這是正常的。它會依序下載工具、寫程式、檢查錯誤、輸出影片。大約要 5 到 15 分鐘，第一次會比較久。</li>
+  <li><strong>它問你問題時。</strong>如果它問「可以執行這個指令嗎？」，看一下指令是不是 <code>npx</code> 開頭（提示詞裡寫的那幾行）。是的話就選「允許」。其他看不懂的問題，回它「照提示詞做就好」。</li>
+  <li><strong>用 Codex 的人看這裡。</strong>Codex 有一層保護叫「沙盒」（sandbox，限制 AI 能碰的範圍），它會擋住做影片要用的瀏覽器。這時 Codex 應該停下來，問你能不能在沙盒外執行兩行指令：<code>npx remotion render …</code> 和 <code>npx remotion still …</code>。只核准這兩行，其他要求不用放行。</li>
+  <li><strong>找到影片。</strong>做完後，打開剛才的 <code>my-video</code> 資料夾，再進 <code>my-explainer</code> → <code>out</code>。裡面的 <code>explainer.mp4</code> 是影片，<code>poster.png</code> 是封面圖，點兩下就能看。</li>
+  <li><strong>換成你的主題。</strong>把文字裡的主題和第 4 段的四段字換掉，再貼一次就好。</li>
+</ol>
 <div class="box"><button data-copy="prompt">複製</button><pre id="prompt">請幫我用 Remotion 做一支 15 秒的中文解說影片，主題是「什麼是 AI agent」。請一步一步照做，不要問我問題，做完再回報。
 
 【1. 建專案】
@@ -77,14 +93,20 @@ npx remotion still Explainer out/poster.png --frame 340
 【6. 回報】
 告訴我 out/explainer.mp4 和 out/poster.png 的位置與檔案大小。
 </pre></div>
-<p class="note">想換主題：只要改「主題」和第 4 段裡的四段文字，其他照貼。每個 AI 做出來的畫面細節會有點不同，但結構、時間和配色會一樣。</p>
-<p class="note">用 Codex 的話：它的沙盒會擋住 Remotion 要開的瀏覽器，輸出影片那一步請允許它在沙盒外執行（或自己在終端機貼那兩行）。</p>
 
 <h2><span class="step">3</span>進階：存成技能，下次一句話就好</h2>
+<p>技能（skill）是一份給 AI 看的說明書。存起來以後，AI 會記得怎麼做，你不用再貼一長段文字。</p>
 <ol>
-  <li>建一個資料夾 <code>explainer-video</code>，把下面這份存成裡面的 <code>SKILL.md</code>（或直接<a href="SKILL.md" download>下載</a>）。</li>
-  <li>放進技能資料夾：Claude Code 放 <code>~/.claude/skills/</code>；Codex 放 <code>~/.agents/skills/</code>；Antigravity 放 <code>~/.gemini/antigravity/skills/</code>。</li>
-  <li>之後只要說：「做一支解說影片，主題是〇〇」。</li>
+  <li>按下面的<a href="SKILL.md" download>下載</a>，或按「複製」把內容存成一個叫 <code>SKILL.md</code> 的檔案。</li>
+  <li>開一個叫 <code>explainer-video</code> 的資料夾，把 <code>SKILL.md</code> 放進去。</li>
+  <li>把這個資料夾放到 AI 助手的技能資料夾：
+    <ul>
+      <li>Claude Code：<code>~/.claude/skills/</code></li>
+      <li>Codex：<code>~/.agents/skills/</code></li>
+      <li>Antigravity：<code>~/.gemini/antigravity/skills/</code></li>
+    </ul>
+    （<code>~</code> 代表你的使用者資料夾。開頭有點的資料夾預設是隱藏的，Mac 在 Finder 按 ⌘⇧. 就看得到。）</li>
+  <li>之後打開 AI 助手，只要說：「做一支解說影片，主題是〇〇」。用 Codex 的話，一樣只核准那兩行輸出影片的指令。</li>
 </ol>
 <div class="box"><button data-copy="skill">複製</button><pre id="skill">---
 name: explainer-video
@@ -135,7 +157,7 @@ Remotion 對個人、3 人以下的公司、非營利組織免費（可商用）
 
 <h2>授權說明</h2>
 <ul class="note">
-  <li><a href="https://www.remotion.dev/docs/license">Remotion</a>：個人、3 人以下的公司、非營利組織可免費使用，商用也可以；超過 3 人的營利公司要買 Company License。</li>
+  <li><a href="https://www.remotion.dev/docs/license">Remotion</a>（用程式做影片的工具）：個人、3 人以下的公司、非營利組織可免費使用，商用也可以；超過 3 人的營利公司要買 Company License。</li>
   <li>影片字型 Noto Sans TC：SIL Open Font License 1.1，可免費商用。</li>
   <li>這頁的原始碼：<a href="https://github.com/589411/lab-explainer-video">589411/lab-explainer-video</a></li>
   <li><a href="https://github.com/remotion-dev/skills">Remotion 官方 agent 技能</a>：用 <code>npx skills add remotion-dev/skills</code> 安裝。</li>
